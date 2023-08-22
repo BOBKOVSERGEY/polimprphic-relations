@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\PaymentHistory;
+use App\Models\VipTariff;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +16,26 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+   $vip = VipTariff::query()->find(1);
+    $purchase = $vip->purchase()->create();
+    \App\Models\PaymentHistory::query()->create([
+        'payment_gateway' => 'Ya',
+        'status' => 'pending',
+        'purchase_id' => $purchase->id,
+        'amount' => $vip->price
+    ]);
+
+   $coin = \App\Models\CoinPackage::query()->find(2);
+    $purchaseTwo = $coin->purchase()->create();
+    \App\Models\PaymentHistory::query()->create([
+        'payment_gateway' => 'Ya',
+        'status' => 'pending',
+        'purchase_id' => $purchaseTwo->id,
+        'amount' => $coin->price
+    ]);
+   $paid = \App\Models\PaidAction::query()->find(7);
+    $paid->purchase()->create();
+
+    $history = PaymentHistory::query()->find(6);
+    dd($history->purchase->purchaseable);
 });
